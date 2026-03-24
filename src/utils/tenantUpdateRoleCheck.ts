@@ -1,4 +1,5 @@
-import { Request, Response, NextFunction } from "express";
+import express from "express";
+import type { Request, Response, NextFunction } from "express";
 import { UserRole } from "../models/user.model";
 
 export const tenantUpdateRoleCheck = (
