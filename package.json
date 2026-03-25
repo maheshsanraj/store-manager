@@ -7,10 +7,10 @@
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "migrate": "sequelize-cli db:migrate",
+    "migrate": "sequelize-cli db:migrate --config dist/config/config.js",
+    "seed": "sequelize-cli db:seed:all --config dist/config/config.js",
     "migrate:undo": "sequelize-cli db:migrate:undo",
     "migrate:undo:all": "sequelize-cli db:migrate:undo:all",
-    "seed": "sequelize-cli db:seed:all",
     "seed:undo": "sequelize-cli db:seed:undo:all"
   },
   "keywords": [],
