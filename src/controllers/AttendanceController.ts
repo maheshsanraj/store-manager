@@ -7,7 +7,7 @@ export class AttendanceController extends BaseController {
   private attendanceService = new AttendanceService();
 
   bulkCreateAttendance = async (req: Request, res: Response) => {
-    const { attendances } = req.body;
+    const { attendances } = req.body!;
     const data = await this.attendanceService.bulkCreateAttendance(attendances);
     return this.handleResponse(res, data, "Attendance created successfully");
   }
