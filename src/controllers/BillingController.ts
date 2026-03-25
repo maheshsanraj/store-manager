@@ -21,7 +21,7 @@ export class BillingController extends BaseController {
       endDate
     } = req.query;
 
-    const user = req.user;
+    const user = req.user!;
 
     let query: any = {
       cursor,
@@ -46,7 +46,7 @@ export class BillingController extends BaseController {
 
     const { shopId, startDate, endDate } = req.query;
 
-    const user = req.user;
+    const user = req.user!;
 
     let query: any = {
       startDate,
@@ -69,7 +69,7 @@ export class BillingController extends BaseController {
   };
   getBillingsStats = async (req: Request, res: Response) => {
     const { tenantId, shopId, startDate, endDate } = req.query;
-    const user = req.user;
+    const user = req.user!;
 
     let query: any = { startDate, endDate };
 

@@ -13,8 +13,8 @@ export class ProductController extends BaseController {
 
     const product = await this.productService.createProduct({
       ...req.body,
-      tenantId: req.user.tenantId,
-      shopId: req.user.shopId,
+      tenantId: req.user!.tenantId,
+      shopId: req.user!.shopId,
       imageUrl
     });
 
@@ -23,9 +23,9 @@ export class ProductController extends BaseController {
 
   getProducts = async (req: Request, res: Response, next: NextFunction) => {
     const products = await this.productService.getProducts({
-      role: req.user.role,
-      tenantId: req.user.tenantId,
-      shopId: req.user.shopId
+      role: req.user!.role,
+      tenantId: req.user!.tenantId,
+      shopId: req.user!.shopId
     });
 
     return this.handleResponse(res, products, "Shops fetched successfully");
@@ -44,7 +44,7 @@ export class ProductController extends BaseController {
         ...req.body,
         imageUrl
       },
-      req.user
+      req.user!
     );
 
     return this.handleResponse(res, product, "Product updated successfully");
@@ -54,7 +54,7 @@ export class ProductController extends BaseController {
 
     const product = await this.productService.deleteProduct(
       req.params.id as string,
-      req.user
+      req.user!
     );
 
     return this.handleResponse(res, product, "Product deleted successfully");

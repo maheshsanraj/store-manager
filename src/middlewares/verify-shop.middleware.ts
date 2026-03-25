@@ -7,12 +7,12 @@ export const verifyShop = async (
     next: NextFunction
 ) => {
     try {
-        const shopId = req.user.shopId || req.body.shopId || req.params.shopId;
+        const shopId = req.user!.shopId || req.body.shopId || req.params.shopId;
 
         const shop = await Shop.findOne({
             where: {
                 id: shopId,
-                tenantId: req.user?.tenantId,
+                tenantId: req.user!?.tenantId,
             },
         });
 

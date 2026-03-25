@@ -12,8 +12,8 @@ export class TenantController extends BaseController {
 
   getTenants = async (req: Request, res: Response, next: NextFunction) => {
     const tenants = await this.tenantService.getTenants({
-      role: req.user.role,
-      tenantId: req.user.tenantId,
+      role: req.user!!.role,
+      tenantId: req.user!!.tenantId,
     });
 
     return this.handleResponse(res, tenants, "Tenants fetched successfully");
@@ -22,7 +22,7 @@ export class TenantController extends BaseController {
   getTenantById = async (req: Request, res: Response) => {
     const tenant = await this.tenantService.getTenantById(
       req.params.id as string,
-      req.user
+      req.user!!
     );
 
     return this.handleResponse(res, tenant, "Tenant fetched successfully");

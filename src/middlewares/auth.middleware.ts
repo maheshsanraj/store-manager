@@ -36,7 +36,7 @@ export const verifyToken = async (
         message: "Session expired. Please login again",
       });
     }
-    req.user = decoded;
+    req.user! = decoded;
 
     next();
   } catch (error) {

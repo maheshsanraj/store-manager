@@ -20,7 +20,7 @@ export class ExpenseController extends BaseController {
 
         const { cursor, limit, shopId, startDate, endDate } = req.query;
 
-        const user = req.user;
+        const user = req.user!;
 
         let query: any = {
             cursor,
@@ -53,7 +53,7 @@ export class ExpenseController extends BaseController {
 
         const { shopId, startDate, endDate } = req.query;
 
-        const user = req.user;
+        const user = req.user!;
 
         let query: any = {};
 

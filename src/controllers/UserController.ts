@@ -15,7 +15,7 @@ export class UserController extends BaseController {
   };
   logout = async (req: Request, res: Response) => {
 
-    const userId = req.user?.id;
+    const userId = req.user!?.id;
 
 
     if (!userId) {

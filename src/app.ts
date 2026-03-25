@@ -4,8 +4,6 @@ import morgan from "morgan";
 import helmet from "helmet";
 import BaseRoutes from "./routes";
 import path from "path";
-import { Employee } from "./models/employee.model";
-import db from "./models";
 
 const app = express();
 

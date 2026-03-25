@@ -8,8 +8,8 @@ export class ShopController extends BaseController {
   createShop = async (req: Request, res: Response, next: NextFunction) => {
     const data = {
       ...req.body,
-      ownerId: req.user.id,
-      tenantId: req.user.tenantId
+      ownerId: req.user!.id,
+      tenantId: req.user!.tenantId
     };
 
     const shop = await this.shopService.createShop(data);
@@ -18,9 +18,9 @@ export class ShopController extends BaseController {
 
   getShops = async (req: Request, res: Response, next: NextFunction) => {
     const shops = await this.shopService.getShops({
-      role: req.user.role,
-      tenantId: req.user.tenantId,
-      shopId: req.user.shopId
+      role: req.user!.role,
+      tenantId: req.user!.tenantId,
+      shopId: req.user!.shopId
     });
 
     return this.handleResponse(res, shops, "Shops fetched successfully");
@@ -30,9 +30,9 @@ export class ShopController extends BaseController {
     const shop = await this.shopService.getShopById(
       req.params.id as string,
       {
-        role: req.user.role,
-        tenantId: req.user.tenantId,
-        shopId: req.user.shopId
+        role: req.user!.role,
+        tenantId: req.user!.tenantId,
+        shopId: req.user!.shopId
       }
     );
 
@@ -46,9 +46,9 @@ export class ShopController extends BaseController {
       req.params.id as string,
       req.body,
       {
-        role: req.user.role,
-        tenantId: req.user.tenantId,
-        shopId: req.user.shopId
+        role: req.user!.role,
+        tenantId: req.user!.tenantId,
+        shopId: req.user!.shopId
       }
     );
 
@@ -60,9 +60,9 @@ export class ShopController extends BaseController {
    const data = await this.shopService.deleteShop(
       req.params.id as string,
       {
-        role: req.user.role,
-        tenantId: req.user.tenantId,
-        shopId: req.user.shopId
+        role: req.user!.role,
+        tenantId: req.user!.tenantId,
+        shopId: req.user!.shopId
       }
     );
 

@@ -14,7 +14,7 @@ export class AttendanceController extends BaseController {
   getAttendances = async (req: Request, res: Response) => {
     const { cursor, limit, tenantId, shopId, employeeId, startDate, endDate } = req.query;
 
-    const user = req.user;
+    const user = req.user!;
 
     let query: any = {
       cursor,
@@ -63,7 +63,7 @@ export class AttendanceController extends BaseController {
   clearAttendances = async (req: Request, res: Response) => {
     const { tenantId, shopId, employeeId, startDate, endDate } = req.query;
 
-    const user = req.user;
+    const user = req.user!;
 
     let query: any = {};
 

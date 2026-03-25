@@ -20,7 +20,7 @@ export class EmployeeTransactionController extends BaseController {
 
         const { cursor, limit, shopId, employeeId, startDate, endDate } = req.query;
 
-        const user = req.user;
+        const user = req.user!;
 
         let query: any = {
             cursor,
@@ -58,7 +58,7 @@ export class EmployeeTransactionController extends BaseController {
 
         const { shopId, employeeId, startDate, endDate } = req.query;
 
-        const user = req.user;
+        const user = req.user!;
 
         let query: any = {};
 

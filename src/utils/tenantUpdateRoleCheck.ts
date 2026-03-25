@@ -7,7 +7,7 @@ export const tenantUpdateRoleCheck = (
   res: Response,
   next: NextFunction
 ) => {
-  const user = req.user;
+  const user = req.user!;
   const tenantId = req.params.id;
 
   if (user.role === UserRole.ADMIN) {

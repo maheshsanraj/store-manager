@@ -9,8 +9,8 @@ export class EmployeeController extends BaseController {
   createEmployee = async (req: Request, res: Response) => {
     const data = {
       ...req.body,
-      shopId: req.user.shopId,
-      tenantId: req.user.tenantId
+      shopId: req.user!.shopId,
+      tenantId: req.user!.tenantId
     };
     const result = await this.employeeService.createEmployee(data);
     return this.handleResponse(res, result, "Employee created successfully")
@@ -18,7 +18,7 @@ export class EmployeeController extends BaseController {
   getEmployees = async (req: Request, res: Response) => {
 
     const { cursor, limit } = req.query;
-    const user = req.user;
+    const user = req.user!;
 
     const query: any = {
       cursor,
@@ -41,14 +41,14 @@ export class EmployeeController extends BaseController {
     const data = await this.employeeService.updateEmployee(
       id as string,
       req.body,
-      req.user
+      req.user!
     );
     return this.handleResponse(res, data, "Employee updated successfully");
   };
 
   clearEmployees = async (req: Request, res: Response) => {
 
-    const user = req.user;
+    const user = req.user!;
 
     const query: any = {};
 

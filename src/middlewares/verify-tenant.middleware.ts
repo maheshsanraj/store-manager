@@ -8,7 +8,7 @@ export const verifyTenant = async (
     next: NextFunction
 ) => {
     try {
-        const tenantId = req.user?.tenantId;
+        const tenantId = req.user!?.tenantId;
 
         if (!tenantId) {
             return res.status(403).json({
