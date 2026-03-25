@@ -1,6 +1,11 @@
 import app from "./app";
 import { sequelize } from "./config/database";
+import dotenv from "dotenv";
+import path from "path";
 
+dotenv.config({
+  path: path.resolve(process.cwd(), ".env"),
+});
 const startServer = async () => {
   try {
     await sequelize.authenticate();
