@@ -14,10 +14,10 @@ module.exports = {
         allowNull: true,
         references: {
           model: "tenants",
-          key: "id"
+          key: "id",
         },
         onDelete: "CASCADE",
-        onUpdate: "CASCADE"
+        onUpdate: "CASCADE",
       },
       name: {
         type: Sequelize.STRING,
@@ -27,17 +27,16 @@ module.exports = {
         type: Sequelize.STRING(10),
         allowNull: false,
       },
+      email: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
       pin: {
         type: Sequelize.STRING,
         allowNull: false,
       },
       role: {
-        type: Sequelize.ENUM(
-          "SUPER_ADMIN",
-          "ADMIN",
-          "USER",
-          "EMPLOYEE"
-        ),
+        type: Sequelize.ENUM("SUPER_ADMIN", "ADMIN", "USER", "EMPLOYEE"),
         allowNull: false,
         defaultValue: "USER",
       },
@@ -46,10 +45,10 @@ module.exports = {
         allowNull: true,
         references: {
           model: "shops",
-          key: "id"
+          key: "id",
         },
         onDelete: "CASCADE",
-        onUpdate: "CASCADE"
+        onUpdate: "CASCADE",
       },
       isActive: {
         type: Sequelize.BOOLEAN,
@@ -62,7 +61,23 @@ module.exports = {
       },
       tokenVersion: {
         type: Sequelize.INTEGER,
-        defaultValue: 0
+        defaultValue: 0,
+      },
+      resetOtp: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      resetOtpExpiry: {
+        type: Sequelize.DATE,
+        allowNull: true,
+      },
+      resetOtpAttempts: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0,
+      },
+      resetOtpRequestedAt: {
+        type: Sequelize.DATE,
+        allowNull: true,
       },
       createdAt: {
         allowNull: false,
@@ -79,21 +94,22 @@ module.exports = {
     await queryInterface.addIndex("users", ["tenantId"]);
     await queryInterface.addIndex("users", ["shopId"]);
 
-    await queryInterface.addIndex(
-      "users",
-      ["tenantId", "mobileNumber"],
-      {
-        unique: true,
-        name: "users_tenant_mobile_unique",
-      }
-    );
+    await queryInterface.addIndex("users", ["tenantId", "email"], {
+      unique: true,
+      name: "users_tenant_email_unique",
+    });
+
+    await queryInterface.addIndex("users", ["tenantId", "mobileNumber"], {
+      unique: true,
+      name: "users_tenant_mobile_unique",
+    });
   },
 
   async down(queryInterface) {
     await queryInterface.dropTable("users");
 
     await queryInterface.sequelize.query(
-      'DROP TYPE IF EXISTS "enum_users_role";'
+      'DROP TYPE IF EXISTS "enum_users_role";',
     );
   },
 };

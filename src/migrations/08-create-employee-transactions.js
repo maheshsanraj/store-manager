@@ -39,7 +39,7 @@ module.exports = {
         onUpdate: "CASCADE",
       },
       type: {
-        type: Sequelize.ENUM("advance", "bonus"),
+        type: Sequelize.ENUM("advance", "bonus","salary_paid"),
         allowNull: false,
       },
       amount: {

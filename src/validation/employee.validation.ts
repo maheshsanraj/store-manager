@@ -19,6 +19,15 @@ export const createEmployeeSchema = Joi.object({
       "string.empty": "Mobile number is required",
     }),
 
+  email: Joi.string()
+    .trim()
+    .email()
+    .required()
+    .messages({
+      "string.empty": "Email is required",
+      "string.email": "Email must be a valid email address",
+    }),
+
   dailySalary: Joi.number()
     .positive()
     .required()

@@ -8,17 +8,10 @@ export class EmployeeRepository extends BaseRepository<Employee> {
     super(Employee);
   }
 
-  async createEmployee(
-    data: Employee,
-    transaction: Transaction
-  ) {
+  async createEmployee(data: Employee, transaction: Transaction) {
     return this.model.create(data, { transaction });
   }
-  async findEmployeeByUserId(
-    userId: string,
-    tenantId: string,
-    shopId: string
-  ) {
+  async findEmployeeByUserId(userId: string, tenantId: string, shopId: string) {
     return this.model.findOne({
       where: {
         userId,
@@ -28,7 +21,6 @@ export class EmployeeRepository extends BaseRepository<Employee> {
     });
   }
   async getEmployees(query: any) {
-
     const where: any = {};
 
     if (query.tenantId) where.tenantId = query.tenantId;
@@ -36,7 +28,7 @@ export class EmployeeRepository extends BaseRepository<Employee> {
 
     if (query.cursor) {
       where.id = {
-        [Op.gt]: query.cursor
+        [Op.gt]: query.cursor,
       };
     }
 
@@ -48,21 +40,26 @@ export class EmployeeRepository extends BaseRepository<Employee> {
         {
           model: db.User,
           as: "user",
-          attributes: ["id", "name", "mobileNumber"]
-        }
-      ]
+          attributes: ["id", "name", "mobileNumber"],
+        },
+      ],
     });
-
   }
 
   async clearEmployees(query: any) {
-
     return this.model.destroy({
       where: {
         tenantId: query.tenantId,
-        shopId: query.shopId
-      }
+        shopId: query.shopId,
+      },
     });
+  }
+  async getEmployeeCount(query: any) {
+    const where: any = {};
 
+    if (query.tenantId) where.tenantId = query.tenantId;
+    if (query.shopId) where.shopId = query.shopId;
+
+    return this.model.count({ where });
   }
 }

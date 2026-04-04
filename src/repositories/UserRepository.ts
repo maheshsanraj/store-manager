@@ -6,16 +6,21 @@ export class UserRepository extends BaseRepository<User> {
   constructor() {
     super(User);
   }
-  async createUser(
-    data: CreationAttributes<User>,
-    transaction: Transaction
-  ) {
+  async createUser(data: CreationAttributes<User>, transaction: Transaction) {
     return this.model.create(data, { transaction });
   }
-  async findByMobileNumber(mobileNumber: string, tenantId?: string) {
+  async findByEmail(email: string, tenantId?: string) {
+    const where: any = { email };
 
+    if (tenantId) {
+      where.tenantId = tenantId;
+    }
+
+    return this.model.findOne({ where });
+  }
+  async findByMobileNumber(mobileNumber: string, tenantId?: string) {
     const where: any = {
-      mobileNumber
+      mobileNumber,
     };
 
     if (tenantId) {
@@ -23,18 +28,15 @@ export class UserRepository extends BaseRepository<User> {
     }
 
     return this.model.findOne({
-      where
+      where,
     });
-
   }
   async deleteByIds(userIds: string[], transaction: Transaction) {
-
     return this.model.destroy({
       where: {
-        id: userIds
+        id: userIds,
       },
-      transaction
+      transaction,
     });
-
   }
 }

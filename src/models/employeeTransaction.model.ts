@@ -1,8 +1,4 @@
-import {
-  DataTypes,
-  Model,
-  Optional
-} from "sequelize";
+import { DataTypes, Model, Optional } from "sequelize";
 import { sequelize } from "../config/database";
 
 export enum EmployeeTransactionType {
@@ -24,15 +20,18 @@ interface EmployeeTransactionAttributes {
   updatedAt?: Date;
 }
 
-type EmployeeTransactionCreationAttributes =
-  Optional<EmployeeTransactionAttributes, "id" | "description">;
+type EmployeeTransactionCreationAttributes = Optional<
+  EmployeeTransactionAttributes,
+  "id" | "description"
+>;
 
 export class EmployeeTransaction
   extends Model<
     EmployeeTransactionAttributes,
     EmployeeTransactionCreationAttributes
   >
-  implements EmployeeTransactionAttributes {
+  implements EmployeeTransactionAttributes
+{
   public id!: string;
   public tenantId!: string;
   public shopId!: string;
@@ -46,7 +45,6 @@ export class EmployeeTransaction
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
   static associate(models: any) {
-
     EmployeeTransaction.belongsTo(models.Employee, {
       foreignKey: "employeeId",
       as: "employee",
@@ -64,7 +62,6 @@ export class EmployeeTransaction
       as: "creator",
       onDelete: "CASCADE",
     });
-
   }
 }
 
@@ -88,7 +85,7 @@ EmployeeTransaction.init(
       allowNull: false,
     },
     type: {
-      type: DataTypes.ENUM("advance", "bonus"),
+      type: DataTypes.ENUM("advance", "bonus", "salary_paid"),
       allowNull: false,
     },
     amount: {
@@ -116,13 +113,12 @@ EmployeeTransaction.init(
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
       allowNull: false,
-    }
+    },
   },
   {
     sequelize,
     tableName: "employee_transactions",
     timestamps: true,
-    paranoid: true,
     indexes: [
       {
         fields: ["tenantId", "shopId", "date"],
@@ -134,5 +130,5 @@ EmployeeTransaction.init(
         fields: ["tenantId", "employeeId"],
       },
     ],
-  }
+  },
 );

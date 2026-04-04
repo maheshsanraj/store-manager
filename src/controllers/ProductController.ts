@@ -15,7 +15,7 @@ export class ProductController extends BaseController {
       ...req.body,
       tenantId: req.user!.tenantId,
       shopId: req.user!.shopId,
-      imageUrl
+      imageUrl,
     });
 
     return this.handleResponse(res, product, "Product created successfully");
@@ -25,10 +25,23 @@ export class ProductController extends BaseController {
     const products = await this.productService.getProducts({
       role: req.user!.role,
       tenantId: req.user!.tenantId,
-      shopId: req.user!.shopId
+      shopId: req.user!.shopId,
     });
 
-    return this.handleResponse(res, products, "Shops fetched successfully");
+    return this.handleResponse(res, products, "Product fetched successfully");
+  };
+
+  getProductById = async (req: Request, res: Response) => {
+    const product = await this.productService.getProductById(
+      req.params.id as string,
+      {
+        role: req.user!.role,
+        tenantId: req.user!.tenantId,
+        shopId: req.user!.shopId,
+      }
+    );
+
+    return this.handleResponse(res, product, "Product fetched successfully");
   };
 
   updateProduct = async (req: Request, res: Response) => {
@@ -42,19 +55,18 @@ export class ProductController extends BaseController {
       req.params.id as string,
       {
         ...req.body,
-        imageUrl
+        imageUrl,
       },
-      req.user!
+      req.user!,
     );
 
     return this.handleResponse(res, product, "Product updated successfully");
   };
 
   deleteProduct = async (req: Request, res: Response) => {
-
     const product = await this.productService.deleteProduct(
       req.params.id as string,
-      req.user!
+      req.user!,
     );
 
     return this.handleResponse(res, product, "Product deleted successfully");

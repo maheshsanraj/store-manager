@@ -12,7 +12,7 @@ module.exports = {
       {
         where: { mobileNumber: "9352363057" },
       },
-      ["id"]
+      ["id"],
     );
 
     if (!existingAdmin) {
@@ -21,6 +21,7 @@ module.exports = {
           id: uuidv4(),
           name: "Super Admin",
           mobileNumber: "9352363057",
+          email: "sirswamahesh@gmail.com",
           pin: hashedPin,
           role: "SUPER_ADMIN",
           isActive: true,

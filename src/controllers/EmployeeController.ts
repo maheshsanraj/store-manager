@@ -10,19 +10,20 @@ export class EmployeeController extends BaseController {
     const data = {
       ...req.body,
       shopId: req.user!.shopId,
-      tenantId: req.user!.tenantId
+      tenantId: req.user!.tenantId,
     };
     const result = await this.employeeService.createEmployee(data);
-    return this.handleResponse(res, result, "Employee created successfully")
-  }
-  getEmployees = async (req: Request, res: Response) => {
+    return this.handleResponse(res, result, "Employee created successfully");
+  };
 
-    const { cursor, limit } = req.query;
+  getEmployees = async (req: Request, res: Response) => {
+    const { cursor, limit, shopId } = req.query;
     const user = req.user!;
 
     const query: any = {
       cursor,
-      limit: Number(limit) || 10
+      limit: Number(limit) || 10,
+      shopId,
     };
 
     if (user.role === UserRole.USER) {
@@ -35,19 +36,17 @@ export class EmployeeController extends BaseController {
   };
 
   updateEmployee = async (req: Request, res: Response) => {
-
     const { id } = req.params;
 
     const data = await this.employeeService.updateEmployee(
       id as string,
       req.body,
-      req.user!
+      req.user!,
     );
     return this.handleResponse(res, data, "Employee updated successfully");
   };
 
   clearEmployees = async (req: Request, res: Response) => {
-
     const user = req.user!;
 
     const query: any = {};
@@ -59,5 +58,52 @@ export class EmployeeController extends BaseController {
 
     const data = await this.employeeService.clearEmployees(query);
     return this.handleResponse(res, data, "Employees cleared successfully");
+  };
+
+  getEmployeeCount = async (req: Request, res: Response) => {
+    const user = req.user!;
+
+    const query: any = {};
+
+    if (user.role === UserRole.USER) {
+      query.tenantId = user.tenantId;
+      query.shopId = user.shopId;
+    }
+
+    if (user.role === UserRole.ADMIN) {
+      query.tenantId = user.tenantId;
+    }
+
+    const count = await this.employeeService.getEmployeeCount(query);
+
+    return this.handleResponse(
+      res,
+      { count },
+      "Employee count fetched successfully",
+    );
+  };
+
+  getSalary = async (req: Request, res: Response) => {
+    const { employeeId } = req.params;
+    const { startDate, endDate, shopId } = req.query;
+
+    const data = await this.employeeService.calculateSalary(
+      employeeId as string,
+      req.user!,
+      shopId as string,
+      startDate as string,
+      endDate as string,
+    );
+
+    return this.handleResponse(res, data, "Salary calculated successfully");
+  };
+
+  deleteEmployee = async (req: Request, res: Response) => {
+   console.log("dhs")
+    const { id } = req.params;
+
+    const data = await this.employeeService.deleteEmployee(id as string, req.user!);
+
+    return this.handleResponse(res, data, "Employee deleted successfully");
   };
 }

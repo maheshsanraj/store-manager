@@ -1,5 +1,4 @@
-import express from "express";
-import type { Request, Response, NextFunction } from "express";
+import type {Response, NextFunction } from "express";
 
 export class BaseController {
   protected handleResponse(

@@ -29,21 +29,20 @@ export class EmployeeAttendance extends Model<
     EmployeeAttendance.belongsTo(models.Employee, {
       foreignKey: "employeeId",
       as: "employee",
-      onDelete: "CASCADE"
+      onDelete: "CASCADE",
     });
 
     EmployeeAttendance.belongsTo(models.Shop, {
       foreignKey: "shopId",
       as: "shop",
-      onDelete: "CASCADE"
+      onDelete: "CASCADE",
     });
 
     EmployeeAttendance.belongsTo(models.User, {
       foreignKey: "markedBy",
       as: "markedByUser",
-      onDelete: "CASCADE"
+      onDelete: "CASCADE",
     });
-
   }
 }
 
@@ -92,18 +91,19 @@ EmployeeAttendance.init(
   },
   {
     sequelize,
-    tableName: "employee_attendance",
+    tableName: "employee_attendances",
     timestamps: true,
     indexes: [
       {
-        fields: ["tenantId", "shopId", "date"],
+        unique: true,
+        fields: ["tenantId", "shopId", "employeeId", "date"],
       },
       {
-        fields: ["employeeId", "date"],
+        fields: ["tenantId", "shopId", "date"],
       },
       {
         fields: ["tenantId", "employeeId"],
       },
     ],
-  }
+  },
 );

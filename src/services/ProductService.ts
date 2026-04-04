@@ -80,6 +80,39 @@ export class ProductService extends BaseService<any> {
     }
   }
 
+  async getProductById(
+    productId: string,
+    user: { role: string; tenantId?: string; shopId?: string }
+  ) {
+    const where: { id: string; tenantId?: string; shopId?: string } = {
+      id: productId,
+    };
+
+    switch (user.role) {
+      case UserRole.SUPER_ADMIN:
+        break;
+
+      case UserRole.ADMIN:
+        where.tenantId = user.tenantId;
+        break;
+
+      case UserRole.USER:
+        where.shopId = user.shopId;
+        break;
+
+      default:
+        throw new Error("Unauthorized");
+    }
+
+    const product = await this.repository.findOne({ where });
+
+    if (!product) {
+      throw new Error("Product not found");
+    }
+
+    return product;
+  }
+
   async updateProduct(
     productId: string,
     data: {

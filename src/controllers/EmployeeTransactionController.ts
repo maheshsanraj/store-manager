@@ -4,88 +4,143 @@ import { EmployeeTransactionService } from "../services/EmployeeTransactionServi
 import { UserRole } from "../models/user.model";
 
 export class EmployeeTransactionController extends BaseController {
+  private transactionService = new EmployeeTransactionService();
 
-    private transactionService = new EmployeeTransactionService();
+  bulkCreateTransactions = async (req: Request, res: Response) => {
+    const { transactions } = req.body;
 
-    bulkCreateTransactions = async (req: Request, res: Response) => {
+    const data =
+      await this.transactionService.bulkCreateTransactions(transactions);
 
-        const { transactions } = req.body;
+    return this.handleResponse(res, data, "Transactions created successfully");
+  };
 
-        const data = await this.transactionService.bulkCreateTransactions(transactions);
+  getTransactions = async (req: Request, res: Response) => {
+    const { cursor, limit, shopId, employeeId, startDate, endDate } = req.query;
 
-        return this.handleResponse(res, data, "Transactions created successfully");
+    const user = req.user!;
+
+    let query: any = {
+      cursor,
+      limit: Number(limit) || 10,
+      startDate,
+      endDate,
     };
 
-    getTransactions = async (req: Request, res: Response) => {
+    if (user.role === UserRole.USER) {
+      query.tenantId = user.tenantId;
+      query.shopId = user.shopId;
 
-        const { cursor, limit, shopId, employeeId, startDate, endDate } = req.query;
+      if (employeeId) query.employeeId = employeeId;
+    }
 
-        const user = req.user!;
+    if (user.role === UserRole.ADMIN) {
+      if (!shopId) {
+        return this.handleResponse(res, null, "shopId is required");
+      }
 
-        let query: any = {
-            cursor,
-            limit: Number(limit) || 10,
-            startDate,
-            endDate
-        };
+      query.shopId = shopId;
 
-        if (user.role === UserRole.USER) {
+      if (employeeId) query.employeeId = employeeId;
+    }
 
-            query.tenantId = user.tenantId;
-            query.shopId = user.shopId;
+    const data = await this.transactionService.getTransactions(query);
 
-            if (employeeId) query.employeeId = employeeId;
+    return this.handleResponse(res, data, "Transactions fetched successfully");
+  };
 
-        }
+  clearTransactions = async (req: Request, res: Response) => {
+    const { shopId, employeeId, startDate, endDate } = req.query;
 
-        if (user.role === UserRole.ADMIN) {
+    const user = req.user!;
 
-            if (!shopId) {
-                return this.handleResponse(res, null, "shopId is required");
-            }
+    let query: any = {};
 
-            query.shopId = shopId;
+    if (user.role === UserRole.USER) {
+      query.tenantId = user.tenantId;
+      query.shopId = user.shopId;
+    }
 
-            if (employeeId) query.employeeId = employeeId;
-        }
+    if (user.role === UserRole.ADMIN) {
+      if (!shopId) {
+        return this.handleResponse(res, null, "shopId is required");
+      }
 
-        const data = await this.transactionService.getTransactions(query);
+      query.shopId = shopId;
+    }
 
-        return this.handleResponse(res, data, "Transactions fetched successfully");
+    if (employeeId) query.employeeId = employeeId;
+    if (startDate && endDate) {
+      query.startDate = startDate;
+      query.endDate = endDate;
+    }
+
+    const data = await this.transactionService.clearTransactions(query);
+
+    return this.handleResponse(res, data, "Transactions cleared successfully");
+  };
+
+  countTransactions = async (req: Request, res: Response) => {
+    const { shopId, employeeId, startDate, endDate, type } = req.query;
+    const user = req.user!;
+
+    let query: any = {
+      startDate,
+      endDate,
+      type,
     };
 
-    clearTransactions = async (req: Request, res: Response) => {
+    if (user.role === UserRole.USER) {
+      query.tenantId = user.tenantId;
+      query.shopId = user.shopId;
 
-        const { shopId, employeeId, startDate, endDate } = req.query;
+      if (employeeId) query.employeeId = employeeId;
+    }
 
-        const user = req.user!;
+    if (user.role === UserRole.ADMIN) {
+      if (!shopId) {
+        return this.handleResponse(res, null, "shopId is required");
+      }
 
-        let query: any = {};
+      query.tenantId = user.tenantId;
+      query.shopId = shopId;
 
-        if (user.role === UserRole.USER) {
+      if (employeeId) query.employeeId = employeeId;
+    }
 
-            query.tenantId = user.tenantId;
-            query.shopId = user.shopId;
+    const data = await this.transactionService.countTransactions(query);
 
-        }
+    return this.handleResponse(res, data, "Transaction count fetched");
+  };
 
-        if (user.role === UserRole.ADMIN) {
+  bulkUpdateTransactions = async (req: Request, res: Response) => {
+    const { transactions } = req.body;
+    const result =
+      await this.transactionService.bulkUpdateTransactions(transactions);
+    return this.handleResponse(
+      res,
+      result,
+      "Transactions processed successfully",
+    );
+  };
 
-            if (!shopId) {
-                return this.handleResponse(res, null, "shopId is required");
-            }
+  deleteTransaction = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const user = req.user!;
 
-            query.shopId = shopId;
-        }
+    let query: any = { id };
 
-        if (employeeId) query.employeeId = employeeId;
-        if (startDate && endDate) {
-            query.startDate = startDate;
-            query.endDate = endDate;
-        }
+    if (user.role === UserRole.USER) {
+      query.tenantId = user.tenantId;
+      query.shopId = user.shopId;
+    }
 
-        const data = await this.transactionService.clearTransactions(query);
+    if (user.role === UserRole.ADMIN) {
+      query.tenantId = user.tenantId;
+    }
 
-        return this.handleResponse(res, data, "Transactions cleared successfully");
-    };
+    const data = await this.transactionService.deleteTransaction(query);
+
+    return this.handleResponse(res, data, "Transaction deleted successfully");
+  };
 }

@@ -4,107 +4,122 @@ import { UserRole } from "../models/user.model";
 import { BaseController } from "./BaseController";
 
 export class ExpenseController extends BaseController {
+  private expenseService = new ExpenseService();
 
-    private expenseService = new ExpenseService();
+  bulkCreateExpenses = async (req: Request, res: Response) => {
+    const { expenses } = req.body;
 
-    bulkCreateExpenses = async (req: Request, res: Response) => {
+    const data = await this.expenseService.bulkCreateExpenses(expenses);
 
-        const { expenses } = req.body;
+    return this.handleResponse(res, data, "Expenses created successfully");
+  };
 
-        const data = await this.expenseService.bulkCreateExpenses(expenses);
+  getExpenses = async (req: Request, res: Response) => {
+    const { cursor, limit, shopId, startDate, endDate } = req.query;
 
-        return this.handleResponse(res, data, "Expenses created successfully");
+    const user = req.user!;
+
+    let query: any = {
+      cursor,
+      limit: Number(limit) || 10,
+      startDate,
+      endDate,
     };
 
-    getExpenses = async (req: Request, res: Response) => {
+    if (user.role === UserRole.USER) {
+      query.tenantId = user.tenantId;
+      query.shopId = user.shopId;
+    }
 
-        const { cursor, limit, shopId, startDate, endDate } = req.query;
+    if (user.role === UserRole.ADMIN) {
+      if (!shopId) {
+        return this.handleResponse(res, null, "shopId is required");
+      }
 
-        const user = req.user!;
+      query.shopId = shopId;
+    }
 
-        let query: any = {
-            cursor,
-            limit: Number(limit) || 10,
-            startDate,
-            endDate,
-        };
+    const data = await this.expenseService.getExpenses(query);
 
-        if (user.role === UserRole.USER) {
+    return this.handleResponse(res, data, "Expenses fetched successfully");
+  };
 
-            query.tenantId = user.tenantId;
-            query.shopId = user.shopId;
-        }
+  clearExpenses = async (req: Request, res: Response) => {
+    const { shopId, startDate, endDate } = req.query;
 
-        if (user.role === UserRole.ADMIN) {
+    const user = req.user!;
 
-            if (!shopId) {
-                return this.handleResponse(res, null, "shopId is required");
-            }
+    let query: any = {};
 
-            query.shopId = shopId;
-        }
+    if (user.role === UserRole.USER) {
+      query.tenantId = user.tenantId;
+      query.shopId = user.shopId;
+    }
 
-        const data = await this.expenseService.getExpenses(query);
+    if (user.role === UserRole.ADMIN) {
+      if (!shopId) {
+        return this.handleResponse(res, null, "shopId is required");
+      }
 
-        return this.handleResponse(res, data, "Expenses fetched successfully");
-    };
+      query.shopId = shopId;
+    }
 
-    clearExpenses = async (req: Request, res: Response) => {
+    if (startDate && endDate) {
+      query.startDate = startDate;
+      query.endDate = endDate;
+    }
 
-        const { shopId, startDate, endDate } = req.query;
+    const data = await this.expenseService.clearExpenses(query);
 
-        const user = req.user!;
+    return this.handleResponse(res, data, "Expenses cleared successfully");
+  };
 
-        let query: any = {};
+  bulkUpdateExpenses = async (req: Request, res: Response) => {
+    const { expenses } = req.body;
 
-        if (user.role === UserRole.USER) {
+    const data = await this.expenseService.bulkUpdateExpenses(expenses);
 
-            query.tenantId = user.tenantId;
-            query.shopId = user.shopId;
-        }
+    return this.handleResponse(res, data, "Expenses updated successfully");
+  };
 
-        if (user.role === UserRole.ADMIN) {
+  bulkDeleteExpenses = async (req: Request, res: Response) => {
+    const { ids } = req.body;
 
-            if (!shopId) {
-                return this.handleResponse(res, null, "shopId is required");
-            }
+    const data = await this.expenseService.bulkDeleteExpenses(ids);
 
-            query.shopId = shopId;
-        }
+    return this.handleResponse(res, data, "Expenses deleted successfully");
+  };
 
-        if (startDate && endDate) {
-            query.startDate = startDate;
-            query.endDate = endDate;
-        }
+  getExpenseCount = async (req: Request, res: Response) => {
+    const { shopId, startDate, endDate } = req.query;
+    const user = req.user!;
 
-        const data = await this.expenseService.clearExpenses(query);
+    let query: any = {};
 
-        return this.handleResponse(res, data, "Expenses cleared successfully");
-    };
+    if (user.role === UserRole.USER) {
+      query.tenantId = user.tenantId;
+      query.shopId = user.shopId;
+    }
 
-    bulkUpdateExpenses = async (req: Request, res: Response) => {
+    if (user.role === UserRole.ADMIN) {
+      if (!shopId) {
+        return this.handleResponse(res, null, "shopId is required");
+      }
 
-        const { expenses } = req.body;
+      query.shopId = shopId;
+    }
 
-        const data = await this.expenseService.bulkUpdateExpenses(expenses);
+    if (startDate && endDate) {
+      query.startDate = startDate;
+      query.endDate = endDate;
+    }
 
-        return this.handleResponse(
-            res,
-            data,
-            "Expenses updated successfully"
-        );
-    };
-    bulkDeleteExpenses = async (req: Request, res: Response) => {
+    const count = await this.expenseService.getExpenseCount(query);
 
-        const { ids } = req.body;
-
-        const data = await this.expenseService.bulkDeleteExpenses(ids);
-
-        return this.handleResponse(
-            res,
-            data,
-            "Expenses deleted successfully"
-        );
-    };
-
+    return this.handleResponse(
+      res,
+      { count },
+      "Expense count fetched successfully",
+    );
+  };
 }

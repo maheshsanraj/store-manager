@@ -1,13 +1,14 @@
-
 import { BaseService } from "./BaseService";
 import { UserRepository } from "../repositories/UserRepository";
 import { UserRole } from "../models/user.model";
-import bcrypt from 'bcrypt'
+import bcrypt from "bcrypt";
 import { Op } from "sequelize";
 import { ShopRepository } from "../repositories/ShopRepository";
 import { sequelize } from "../config/database";
 import { TenantRepository } from "../repositories/TenantRepository";
 import { Product } from "../models/product.model";
+import { sendEmail } from "./emailSerivce";
+import { welcomeTemplate } from "../templates/welcome.template";
 export class ShopService extends BaseService<any> {
   private userRepository: UserRepository;
   private tenantRepository: TenantRepository;
@@ -23,20 +24,20 @@ export class ShopService extends BaseService<any> {
     shopName: string;
     username: string;
     mobileNumber: string;
+    email: string;
     ownerId: string;
     tenantId: string;
   }) {
     return sequelize.transaction(async (transaction) => {
-
       const now = new Date();
-
       const shopName = data.shopName.trim();
       const username = data.username.trim();
       const mobileNumber = data.mobileNumber.trim();
+      const email = data.email.trim().toLowerCase();
 
       const tenant = await this.tenantRepository.findById(
         data.tenantId,
-        transaction
+        transaction,
       );
 
       if (!tenant) {
@@ -45,19 +46,21 @@ export class ShopService extends BaseService<any> {
 
       const shopCount = await this.repository.count(
         { tenantId: data.tenantId },
-        transaction
+        transaction,
       );
 
       if (tenant.shopLimit && shopCount >= tenant.shopLimit) {
-        throw new Error(`You can only create up to ${tenant.shopLimit} shops for this tenant`);
+        throw new Error(
+          `You can only create up to ${tenant.shopLimit} shops for this tenant`,
+        );
       }
 
       const existingShop = await this.repository.findOne({
         where: {
           name: shopName,
-          tenantId: data.tenantId
+          tenantId: data.tenantId,
         },
-        transaction
+        transaction,
       });
 
       if (existingShop) {
@@ -68,10 +71,11 @@ export class ShopService extends BaseService<any> {
         where: {
           [Op.or]: [
             { name: username },
-            { mobileNumber: mobileNumber }
-          ]
+            { mobileNumber: mobileNumber },
+            { email },
+          ],
         },
-        transaction
+        transaction,
       });
 
       if (existingUser) {
@@ -82,6 +86,10 @@ export class ShopService extends BaseService<any> {
         if (existingUser.mobileNumber === mobileNumber) {
           throw new Error("Mobile number already exists");
         }
+
+        if (existingUser.email === email) {
+          throw new Error("Email already exists");
+        }
       }
 
       const shop = await this.repository.create(
@@ -91,9 +99,9 @@ export class ShopService extends BaseService<any> {
           ownerId: data.ownerId,
           isActive: true,
           createdAt: now,
-          updatedAt: now
+          updatedAt: now,
         },
-        { transaction }
+        { transaction },
       );
 
       const randomPin = Math.floor(100000 + Math.random() * 900000).toString();
@@ -104,39 +112,45 @@ export class ShopService extends BaseService<any> {
           tenantId: data.tenantId,
           shopId: shop.id,
           name: username,
+          email,
           mobileNumber: mobileNumber,
           pin: hashedPin,
           role: UserRole.USER,
           isActive: true,
           createdAt: now,
-          updatedAt: now
+          updatedAt: now,
         },
-        { transaction }
+        { transaction },
       );
+      console.log(mobileNumber, " ", randomPin, " : Login data");
 
-      console.log("Shop Login:", mobileNumber, randomPin);
+      // setImmediate(() => {
+      //   sendEmail({
+      //     to: email,
+      //     subject: "Account Created",
+      //     html: welcomeTemplate(username, mobileNumber, randomPin),
+      //   });
+      // });
 
       return {
         shop,
-        user
+        user,
       };
     });
   }
   async getShops(user: { role: string; tenantId?: string; shopId?: string }) {
-
     switch (user.role) {
-
       case UserRole.SUPER_ADMIN:
         return this.repository.findAll();
 
       case UserRole.ADMIN:
         return this.repository.findAll({
-          where: { tenantId: user.tenantId }
+          where: { tenantId: user.tenantId },
         });
 
       case UserRole.USER:
         return this.repository.findAll({
-          where: { id: user.shopId }
+          where: { id: user.shopId },
         });
 
       default:
@@ -146,9 +160,8 @@ export class ShopService extends BaseService<any> {
 
   async getShopById(
     id: string,
-    user: { role: string; tenantId?: string; shopId?: string }
+    user: { role: string; tenantId?: string; shopId?: string },
   ) {
-
     let shopId = id;
 
     if (user.role === UserRole.USER) {
@@ -168,13 +181,11 @@ export class ShopService extends BaseService<any> {
     return shop;
   }
 
-
   async updateShop(
     id: string,
     data: { shopName: string },
-    user: { role: string; tenantId?: string; shopId?: string }
+    user: { role: string; tenantId?: string; shopId?: string },
   ) {
-
     let shopId = id;
 
     if (user.role === UserRole.USER) {
@@ -196,18 +207,14 @@ export class ShopService extends BaseService<any> {
       throw new Error("No changes detected");
     }
 
-    await this.repository.update(
-      { id: shopId },
-      { name: newName }
-    );
+    await this.repository.update({ id: shopId }, { name: newName });
 
     return this.repository.findById(shopId);
   }
   async deleteShop(
     id: string,
-    user: { role: string; tenantId?: string; shopId?: string }
+    user: { role: string; tenantId?: string; shopId?: string },
   ) {
-
     const shop = await this.repository.findById(id);
 
     if (!shop) {
@@ -218,7 +225,7 @@ export class ShopService extends BaseService<any> {
       throw new Error("Unauthorized");
     }
     const products = await Product.findAll({
-      where: { shopId: id }
+      where: { shopId: id },
     });
 
     for (const product of products) {

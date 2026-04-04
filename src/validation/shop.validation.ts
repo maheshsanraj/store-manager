@@ -31,6 +31,15 @@ export const createShopSchema = Joi.object({
       "string.empty": "Mobile number is required",
       "string.pattern.base": "Mobile number must be a valid 10 digit Indian number",
     }),
+
+  email: Joi.string()
+    .trim()
+    .email()
+    .required()
+    .messages({
+      "string.empty": "Email is required",
+      "string.email": "Email must be a valid email address",
+    }),
 });
 
 export const updateShopSchema = Joi.object({

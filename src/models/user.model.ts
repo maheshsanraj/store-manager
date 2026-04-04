@@ -22,12 +22,17 @@ export class User extends Model<
   declare tenantId: string | null;
   declare name: string;
   declare mobileNumber: string;
+  declare email: string;
   declare pin: string;
   declare role: CreationOptional<UserRole>;
   declare shopId: string | null;
   declare isActive: CreationOptional<boolean>;
   declare lastLogin: Date | null;
   declare tokenVersion: number;
+  declare resetOtpAttempts: CreationOptional<number>;
+  declare resetOtp: CreationOptional<string | null>;
+  declare resetOtpExpiry: CreationOptional<Date | null>;
+  declare resetOtpRequestedAt: CreationOptional<Date | null>;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
 
@@ -35,12 +40,12 @@ export class User extends Model<
     User.belongsTo(models.Shop, {
       foreignKey: "shopId",
       as: "shop",
-      onDelete: "CASCADE"
-    })
+      onDelete: "CASCADE",
+    });
     User.hasOne(models.Employee, {
       foreignKey: "userId",
       as: "employee",
-      onDelete: 'CASCADE'
+      onDelete: "CASCADE",
     });
   }
 }
@@ -65,6 +70,14 @@ User.init(
       allowNull: false,
       unique: true,
     },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        isEmail: true,
+        notEmpty: true,
+      },
+    },
     pin: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -87,7 +100,23 @@ User.init(
     },
     tokenVersion: {
       type: DataTypes.INTEGER,
-      defaultValue: 0
+      defaultValue: 0,
+    },
+    resetOtp: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    resetOtpExpiry: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    resetOtpAttempts: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    resetOtpRequestedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -114,6 +143,10 @@ User.init(
         unique: true,
         fields: ["tenantId", "mobileNumber"],
       },
+      {
+        unique: true,
+        fields: ["tenantId", "email"],
+      },
     ],
-  }
+  },
 );

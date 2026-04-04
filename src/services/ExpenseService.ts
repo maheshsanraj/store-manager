@@ -4,76 +4,74 @@ import { Expense } from "../models/expense.model";
 import { v4 as uuidv4 } from "uuid";
 
 export class ExpenseService extends BaseService<any> {
+  constructor() {
+    const repo = new ExpenseRepository();
+    super(repo);
+  }
 
-    constructor() {
-        const repo = new ExpenseRepository();
-        super(repo);
-    }
+  async bulkCreateExpenses(expenses: Expense[]) {
+    const formattedData = expenses.map((item) => ({
+      id: item.id ?? uuidv4(),
 
-    async bulkCreateExpenses(expenses: Expense[]) {
+      tenantId: item.tenantId,
+      shopId: item.shopId,
 
-        const formattedData = expenses.map((item) => ({
-            id: item.id ?? uuidv4(),
+      title: item.title.trim(),
 
-            tenantId: item.tenantId,
-            shopId: item.shopId,
+      amount: Number(item.amount),
 
-            title: item.title.trim(),
+      date: item.date,
 
-            amount: Number(item.amount),
+      createdBy: item.createdBy,
 
-            date: item.date,
+      createdAt: item.createdAt ?? new Date(),
+      updatedAt: item.updatedAt ?? new Date(),
+    }));
 
-            createdBy: item.createdBy,
+    return this.repository.bulkCreate(formattedData);
+  }
 
-            createdAt: item.createdAt ?? new Date(),
-            updatedAt: item.updatedAt ?? new Date(),
+  async getExpenses(query: any) {
+    const expenses = await this.repository.getExpenses(query);
 
-        }));
+    const nextCursor =
+      expenses.length > 0 ? expenses[expenses.length - 1].id : null;
 
-        return this.repository.bulkCreate(formattedData);
-    }
+    return {
+      data: expenses,
+      nextCursor,
+      hasMore: expenses.length === (query.limit || 10),
+    };
+  }
 
-    async getExpenses(query: any) {
+  async clearExpenses(query: any) {
+    const deletedCount = await this.repository.clearExpenses(query);
+    return {
+      deletedCount,
+    };
+  }
 
-        const expenses = await this.repository.getExpenses(query);
+  async bulkUpdateExpenses(expenses: any[]) {
+    const formattedData = expenses.map((item) => ({
+      id: item.id,
+      ...(item.title && { title: item.title.trim() }),
+      ...(item.amount && { amount: Number(item.amount) }),
+      ...(item.date && { date: item.date }),
+      updatedAt: new Date(),
+    }));
 
-        const nextCursor =
-            expenses.length > 0
-                ? expenses[expenses.length - 1].id
-                : null;
+    return this.repository.bulkUpdateExpenses(formattedData);
+  }
 
-        return {
-            data: expenses,
-            nextCursor,
-            hasMore: expenses.length === (query.limit || 10),
-        };
-    }
+  async bulkDeleteExpenses(ids: string[]) {
+    const deletedCount = await this.repository.bulkDeleteExpenses(ids);
 
-    async clearExpenses(query: any) {
-        const deletedCount = await this.repository.clearExpenses(query);
-        return {
-            deletedCount,
-        };
-    }
-    async bulkUpdateExpenses(expenses: any[]) {
+    return {
+      deletedCount,
+    };
+  }
 
-        const formattedData = expenses.map((item) => ({
-            id: item.id,
-            ...(item.title && { title: item.title.trim() }),
-            ...(item.amount && { amount: Number(item.amount) }),
-            ...(item.date && { date: item.date }),
-            updatedAt: new Date(),
-        }));
-
-        return this.repository.bulkUpdateExpenses(formattedData);
-    }
-    async bulkDeleteExpenses(ids: string[]) {
-
-        const deletedCount = await this.repository.bulkDeleteExpenses(ids);
-
-        return {
-            deletedCount
-        };
-    }
+  async getExpenseCount(query: any) {
+    return this.repository.getExpenseCount(query);
+  }
 }

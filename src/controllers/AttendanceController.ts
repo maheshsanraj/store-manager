@@ -8,11 +8,13 @@ export class AttendanceController extends BaseController {
 
   bulkCreateAttendance = async (req: Request, res: Response) => {
     const { attendances } = req.body!;
-    const data = await this.attendanceService.bulkCreateAttendance(attendances);
-    return this.handleResponse(res, data, "Attendance created successfully");
-  }
+    const result =
+      await this.attendanceService.bulkCreateAttendance(attendances);
+    const { message, ...data } = result;
+    return this.handleResponse(res, data, message);
+  };
   getAttendances = async (req: Request, res: Response) => {
-    const { cursor, limit, tenantId, shopId, employeeId, startDate, endDate } = req.query;
+    const { cursor, limit, shopId, employeeId, startDate, endDate } = req.query;
 
     const user = req.user!;
 
@@ -22,7 +24,6 @@ export class AttendanceController extends BaseController {
     };
 
     if (user.role === UserRole.USER) {
-
       query.tenantId = user.tenantId;
       query.shopId = user.shopId;
 
@@ -30,15 +31,14 @@ export class AttendanceController extends BaseController {
 
       query.startDate = startDate || today;
       query.endDate = endDate || today;
-      console.log(employeeId)
+
       if (employeeId) {
         query.employeeId = employeeId;
       }
     }
 
     if (user.role === UserRole.ADMIN) {
-
-      query.tenantId = tenantId;
+      query.tenantId = user.tenantId;
 
       if (!shopId) {
         return this.handleResponse(res, null, "shopId is required for admin");
@@ -55,7 +55,7 @@ export class AttendanceController extends BaseController {
         query.employeeId = employeeId;
       }
     }
-
+    console.log(query);
     const data = await this.attendanceService.getAttendances(query);
 
     return this.handleResponse(res, data, "Attendances fetched successfully");
@@ -68,7 +68,6 @@ export class AttendanceController extends BaseController {
     let query: any = {};
 
     if (user.role === UserRole.USER) {
-
       query.tenantId = user.tenantId;
       query.shopId = user.shopId;
 
@@ -83,7 +82,6 @@ export class AttendanceController extends BaseController {
     }
 
     if (user.role === UserRole.ADMIN) {
-
       if (!shopId) {
         return this.handleResponse(res, null, "shopId is required for admin");
       }

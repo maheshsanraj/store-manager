@@ -2,7 +2,7 @@
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("employee_attendance", {
+    await queryInterface.createTable("employee_attendances", {
       id: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
@@ -70,18 +70,25 @@ module.exports = {
       },
     });
 
-    await queryInterface.addIndex("employee_attendance", ["tenantId", "shopId", "date"]);
-    await queryInterface.addIndex("employee_attendance", ["employeeId", "date"]);
-    await queryInterface.addIndex("employee_attendance", ["tenantId", "employeeId"]);
+    await queryInterface.addIndex("employee_attendances", [
+      "tenantId",
+      "shopId",
+      "date",
+    ]);
 
-    await queryInterface.addConstraint("employee_attendance", {
-      fields: ["employeeId", "date"],
+    await queryInterface.addIndex("employee_attendances", [
+      "tenantId",
+      "employeeId",
+    ]);
+
+    await queryInterface.addConstraint("employee_attendances", {
+      fields: ["tenantId", "shopId", "employeeId", "date"],
       type: "unique",
-      name: "unique_employee_attendance_per_day",
+      name: "unique_employee_attendances_per_day_per_shop",
     });
   },
 
   async down(queryInterface) {
-    await queryInterface.dropTable("employee_attendance");
+    await queryInterface.dropTable("employee_attendances");
   },
 };

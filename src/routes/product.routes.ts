@@ -34,6 +34,10 @@ class ProductRoutes {
       "/",
       asyncHandler(this.productController.getProducts)
     );
+    this.router.get(
+      "/:id",
+      asyncHandler(this.productController.getProductById)
+    );
     this.router.put(
       "/:id",
       upload.single("image"),
