@@ -124,13 +124,13 @@ export class ShopService extends BaseService<any> {
       );
       console.log(mobileNumber, " ", randomPin, " : Login data");
 
-      // setImmediate(() => {
-      //   sendEmail({
-      //     to: email,
-      //     subject: "Account Created",
-      //     html: welcomeTemplate(username, mobileNumber, randomPin),
-      //   });
-      // });
+      setImmediate(() => {
+        sendEmail({
+          to: email,
+          subject: "Account Created",
+          html: welcomeTemplate(username, mobileNumber, randomPin),
+        });
+      });
 
       return {
         shop,

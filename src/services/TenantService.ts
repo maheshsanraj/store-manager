@@ -98,13 +98,13 @@ export class TenantService extends BaseService<any> {
       );
       console.log(mobileNumber, " ", randomPin, " : Login data");
 
-      // setImmediate(() => {
-      //   sendEmail({
-      //     to: user.email,
-      //     subject: "Account Created",
-      //     html: welcomeTemplate(data.username, mobileNumber, randomPin),
-      //   });
-      // });
+      setImmediate(() => {
+        sendEmail({
+          to: user.email,
+          subject: "Account Created",
+          html: welcomeTemplate(data.username, mobileNumber, randomPin),
+        });
+      });
 
       return { tenant, user };
     });
