@@ -62,7 +62,6 @@ export const updateEmployeeSchema = Joi.object({
       "string.base": "Mobile number must be a string",
       "string.pattern.base": "Mobile number must be exactly 10 digits"
     }),
-
   dailySalary: Joi.number()
     .positive()
     .messages({

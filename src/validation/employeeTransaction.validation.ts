@@ -77,7 +77,7 @@ export const bulkUpdateEmployeeTransactionSchema = Joi.object({
           .valid("advance", "bonus", "salary_paid")
           .optional()
           .messages({
-            "any.only": "Type must be either advance or bonus",
+            "any.only": "Type must be either advance, bonus, or salary_paid",
           }),
 
         amount: Joi.number().positive().optional().messages({
