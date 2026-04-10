@@ -20,10 +20,12 @@ export const bulkEmployeeTransactionSchema = Joi.object({
           "string.guid": "Employee ID must be a valid UUID",
           "any.required": "Employee ID is required",
         }),
-        type: Joi.string().valid("advance", "bonus").required().messages({
-          "any.only": "Type must be either advance or bonus",
-          "any.required": "Transaction type is required",
-        }),
+        type: Joi.string()
+          .valid("advance", "bonus", "salary_paid")
+          .optional()
+          .messages({
+            "any.only": "Type must be either advance, bonus, or salary_paid",
+          }),
         amount: Joi.number().positive().required().messages({
           "number.base": "Amount must be a number",
           "number.positive": "Amount must be greater than 0",

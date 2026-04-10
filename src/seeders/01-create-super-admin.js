@@ -1,29 +1,31 @@
 "use strict";
 
+require("dotenv").config();
+
 const bcrypt = require("bcrypt");
 const { v4: uuidv4 } = require("uuid");
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    const hashedPin = await bcrypt.hash("123456", 10);
+    const hashedPin = await bcrypt.hash(process.env.ADMIN_PIN, 10);
 
     const existingAdmin = await queryInterface.rawSelect(
       "users",
       {
-        where: { mobileNumber: "9352363057" },
+        where: { mobileNumber: process.env.ADMIN_MOBILE },
       },
-      ["id"],
+      ["id"]
     );
 
     if (!existingAdmin) {
       await queryInterface.bulkInsert("users", [
         {
           id: uuidv4(),
-          name: "Super Admin",
-          mobileNumber: "9352363057",
-          email: "sirswamahesh@gmail.com",
+          name: process.env.ADMIN_NAME,
+          mobileNumber: process.env.ADMIN_MOBILE,
+          email: process.env.ADMIN_EMAIL,
           pin: hashedPin,
-          role: "SUPER_ADMIN",
+          role: process.env.ADMIN_ROLE || "SUPER_ADMIN",
           isActive: true,
           tokenVersion: 0,
           createdAt: new Date(),
@@ -35,7 +37,7 @@ module.exports = {
 
   async down(queryInterface) {
     await queryInterface.bulkDelete("users", {
-      mobileNumber: "9352363057",
+      mobileNumber: process.env.ADMIN_MOBILE,
     });
   },
 };

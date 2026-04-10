@@ -20,7 +20,6 @@ class BaseRoutes {
   private initializeRoutes() {
     // Health check
     this.router.get("/health", (req, res) => {
-      console.log(process.env.DATABASE_URl)
       res.status(200).json({
         success: true,
         message: "Server is running",

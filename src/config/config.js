@@ -2,8 +2,6 @@ const path = require("path");
 require("dotenv").config({
   path: path.resolve(process.cwd(), ".env"),
 });
-console.log("DB URL:", process.env.DATABASE_URL);
-
 
 module.exports = {
   development: {
