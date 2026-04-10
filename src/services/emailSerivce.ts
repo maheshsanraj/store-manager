@@ -9,7 +9,7 @@ export const sendEmail = async ({
 }: SendEmailOptions): Promise<boolean> => {
   try {
     await transporter.sendMail({
-      from: `"Your App" <${process.env.EMAIL_USER}>`,
+      from: `"Store Manager" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       text,
