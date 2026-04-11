@@ -23,27 +23,33 @@ export class Shop extends Model<
     Shop.hasMany(models.User, {
       foreignKey: "shopId",
       as: "users",
-      onDelete: "CASCADE"
+      onDelete: "CASCADE",
     });
     Shop.hasMany(models.Employee, {
       foreignKey: "shopId",
       as: "employees",
-      onDelete: "CASCADE"
+      onDelete: "CASCADE",
     });
     Shop.hasMany(models.Product, {
       foreignKey: "shopId",
       as: "products",
-      onDelete: "CASCADE"
+      onDelete: "CASCADE",
+      hooks: true,
     });
     Shop.hasMany(models.Expense, {
       foreignKey: "shopId",
       as: "expenses",
-      onDelete: "CASCADE"
+      onDelete: "CASCADE",
     });
     Shop.hasMany(models.Billing, {
       foreignKey: "shopId",
       as: "billings",
-      onDelete: "CASCADE"
+      onDelete: "CASCADE",
+    });
+    Shop.belongsTo(models.Tenant, {
+      foreignKey: "tenantId",
+      as: "tenant",
+      onDelete: "CASCADE",
     });
   }
 }
@@ -92,5 +98,5 @@ Shop.init(
         fields: ["tenantId"],
       },
     ],
-  }
+  },
 );

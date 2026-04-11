@@ -47,6 +47,11 @@ export class User extends Model<
       as: "employee",
       onDelete: "CASCADE",
     });
+    User.belongsTo(models.Tenant, {
+      foreignKey: "tenantId",
+      as: "tenant",
+      onDelete: "CASCADE",
+    });
   }
 }
 

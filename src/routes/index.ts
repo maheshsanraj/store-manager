@@ -8,6 +8,7 @@ import employeeRoutes from "./employee.routes";
 import employeeTransactionRoutes from "./employeeTransaction.routes";
 import attendanceRoutes from "./attendance.routes";
 import expenseRoutes from "./expense.routes";
+import reportRoutes from "./report.routes";
 
 class BaseRoutes {
   public router: Router;
@@ -28,13 +29,14 @@ class BaseRoutes {
 
     this.router.use("/users", userRoutes);
     this.router.use("/tenants", tenantRoutes);
-    this.router.use('/shops', shopRoutes);
-    this.router.use('/products', productRoutes);
-    this.router.use('/billings', billingRoutes);
-    this.router.use('/employees', employeeRoutes);
-    this.router.use('/attendances', attendanceRoutes);
-    this.router.use('/employee-transactions', employeeTransactionRoutes);
-    this.router.use('/expenses', expenseRoutes);
+    this.router.use("/shops", shopRoutes);
+    this.router.use("/products", productRoutes);
+    this.router.use("/billings", billingRoutes);
+    this.router.use("/employees", employeeRoutes);
+    this.router.use("/attendances", attendanceRoutes);
+    this.router.use("/employee-transactions", employeeTransactionRoutes);
+    this.router.use("/expenses", expenseRoutes);
+    this.router.use("/reports", reportRoutes);
   }
 }
 

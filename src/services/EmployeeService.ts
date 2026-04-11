@@ -84,16 +84,15 @@ export class EmployeeService extends BaseService<any> {
         },
         transaction,
       );
-      console.log(mobileNumber, " ", pin, " : Login data");
-      // if (isNewUser) {
-      //   setImmediate(() => {
-      //     sendEmail({
-      //       to: email,
-      //       subject: "Account Created",
-      //       html: welcomeTemplate(name, mobileNumber, pin),
-      //     });
-      //   });
-      // }
+      if (isNewUser) {
+        setImmediate(() => {
+          sendEmail({
+            to: email,
+            subject: "Account Created",
+            html: welcomeTemplate(name, mobileNumber, pin),
+          });
+        });
+      }
 
       return {
         mobileNumber,

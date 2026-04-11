@@ -96,8 +96,6 @@ export class TenantService extends BaseService<any> {
         },
         { transaction },
       );
-      console.log(mobileNumber, " ", randomPin, " : Login data");
-
       setImmediate(() => {
         sendEmail({
           to: user.email,
@@ -177,13 +175,9 @@ export class TenantService extends BaseService<any> {
         throw new Error("Tenant not found");
       }
 
-      await this.employeeRepository.delete({ tenantId }, transaction);
+      await tenant.destroy({ transaction });
 
-      await this.userRepository.delete({ tenantId }, transaction);
-
-      await this.repository.delete({ id: tenantId }, transaction);
-
-      return { success: true };
+      return { deleted: true };
     });
   }
 }

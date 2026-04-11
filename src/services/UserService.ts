@@ -5,6 +5,7 @@ import { UserRepository } from "../repositories/UserRepository";
 import { generateOtp } from "../utils/generateOtp";
 import { sendEmail } from "./emailSerivce";
 import { otpTemplate } from "../templates/resetOtp.template";
+import { LoginResponseDto } from "../dtos/user";
 
 interface LoginResponse {
   user: any;
@@ -46,15 +47,8 @@ export class UserService extends BaseService<any> {
     const token = jwt.sign(payload, process.env.JWT_SECRET!, {
       expiresIn: "7d",
     });
-    const { pin: _pin, tenantId, shopId, ...rest } = user.dataValues;
 
-    const safeUser = {
-      ...rest,
-      ...(tenantId && { tenantId }),
-      ...(shopId && { shopId }),
-    };
-
-    return { user: safeUser, token };
+    return new LoginResponseDto(user, token);
   }
   async logout(userId: string) {
     const user = await this.userRepo.findById(userId);

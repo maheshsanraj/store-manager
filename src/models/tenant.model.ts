@@ -27,6 +27,21 @@ export class Tenant extends Model<
 
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
+
+  static associate(models: any) {
+    Tenant.hasMany(models.Shop, {
+      foreignKey: "tenanntId",
+      as: "shops",
+      onDelete: "CASCADE",
+      hooks: true,
+    });
+    Tenant.hasMany(models.User, {
+      foreignKey: "tenantId",
+      as: "users",
+      onDelete: "CASCADE",
+      hooks: true,
+    });
+  }
 }
 
 Tenant.init(
@@ -92,5 +107,5 @@ Tenant.init(
         fields: ["isActive"],
       },
     ],
-  }
+  },
 );

@@ -122,7 +122,6 @@ export class ShopService extends BaseService<any> {
         },
         { transaction },
       );
-      console.log(mobileNumber, " ", randomPin, " : Login data");
 
       setImmediate(() => {
         sendEmail({
@@ -131,6 +130,7 @@ export class ShopService extends BaseService<any> {
           html: welcomeTemplate(username, mobileNumber, randomPin),
         });
       });
+      console.log(mobileNumber, randomPin);
 
       return {
         shop,
@@ -228,9 +228,8 @@ export class ShopService extends BaseService<any> {
       where: { shopId: id },
     });
 
-    for (const product of products) {
-      await product.destroy();
-    }
+    await Promise.all(products.map((p) => p.destroy()));
+
     await shop.destroy();
 
     return { deleted: true };
